@@ -124,3 +124,42 @@ def flipkart_scraper_2(product_type):
                 pass
     return data
     
+
+def amazon_details(url):
+    try:
+        webpage = requests.get(url, headers=HEADERS)
+        soup = BeautifulSoup(webpage.content, "lxml")
+        discount = soup.find('span', attrs={'class':"a-size-large a-color-price savingPriceOverride aok-align-center reinventPriceSavingsPercentageMargin savingsPercentage"}).text
+        real_price_data = soup.find('span', attrs={'class':'a-size-small a-color-secondary aok-align-center basisPrice'})
+        real_price = real_price_data.find('span', attrs={'class':'a-offscreen'}).text
+        desc_data = soup.find('ul', attrs={'class':'a-unordered-list a-vertical a-spacing-mini'})
+        desc = desc_data.text
+        return {
+            "discount": discount,
+            "real_price": real_price,
+            "desc": desc
+        }
+    except:
+        return {"message":"error"}
+
+def flipkart_details(url):
+    try:
+        webpage = requests.get(url, headers=HEADERS)
+        soup = BeautifulSoup(webpage.content, "lxml")
+        real_price = soup.find('div', attrs={'class':'_3I9_wc _2p6lqe'}).text
+        discount = soup.find('div', attrs={'class':'_3Ay6Sb _31Dcoz'}).text
+        desc = soup.find('div', attrs={'class':'_2418kt'}).text
+        return {
+            "discount": discount,
+            "real_price": real_price,
+            "desc": desc
+        }
+    except:
+        return {"message":"error"}
+
+
+def get_details(site, link):
+    if site == "amazon":
+        return amazon_details(link)
+    elif site == "flipkart":
+        return flipkart_details(link)
